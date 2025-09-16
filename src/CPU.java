@@ -219,5 +219,12 @@ public class CPU {
         PC += 2;
     }
 
+    public void ArithmeticShiftLeft(byte value) {
+        P.set(Flag.CARRY, (value & 0x80) != 0); //set carry flag based on MSB of value
+        value = (byte) (value << 1);
+        updateZNFlags(value);
+        A = value;
+    }
+
 }
 
