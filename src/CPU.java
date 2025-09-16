@@ -116,7 +116,7 @@ public class CPU {
         A = (byte) result;
         updateZNFlags(A);
     }
-
+    //addressing modes
     public void ADC_Immediate() {
         byte value = Immediate();
         addWithCarry(value);
@@ -126,6 +126,96 @@ public class CPU {
     public void ADC_ZeroPage() {
         byte value = ZeroPage();
         addWithCarry(value);
+        PC += 2;
+    }
+
+    public void ADC_ZeroPageX() {
+        byte value = ZeroPageX();
+        addWithCarry(value);
+        PC += 2;
+    }
+
+    public void ADC_Absolute() {
+        byte value = Absolute();
+        addWithCarry(value);
+        PC += 3;
+    }
+
+    public void ADC_AbsoluteX() {
+        byte value = AbsoluteX();
+        addWithCarry(value);
+        PC += 3;
+    }
+
+    public void ADC_AbsoluteY() {
+        byte value = AbsoluteY();
+        addWithCarry(value);
+        PC += 3;
+    }
+
+    public void ADC_IndirectX() {
+        byte value = IndirectX();
+        addWithCarry(value);
+        PC += 2;
+    }
+
+    public void ADC_IndirectY() {
+        byte value = IndirectY();
+        addWithCarry(value);
+        PC += 2;
+    }
+    //base and function
+    public void AND(byte value) {
+        int result = (A & 0xFF) & (value & 0xFF);
+        A = (byte) result;
+        updateZNFlags(A);
+    }
+
+    public void AND_Immediate() {
+        byte value = Immediate();
+        addWithCarry(value);
+        PC += 2;
+    }
+
+    public void AND_ZeroPage() {
+        byte value = ZeroPage();
+        AND(value);
+        PC += 2;
+    }
+
+    public void AND_ZeroPageX() {
+        byte value = ZeroPageX();
+        AND(value);
+        PC += 2;
+    }
+
+    public void AND_Absolute() {
+        byte value = Absolute();
+        AND(value);
+        PC += 3;
+    }
+
+    public void AND_AbsoluteX() {
+        byte value = AbsoluteX();
+        AND(value);
+        PC += 3;
+    }
+
+    public void AND_AbsoluteY() {
+        byte value = AbsoluteY();
+        AND(value);
+        PC += 3;
+    }
+
+    public void AND_IndirectX() {
+        byte value = IndirectX();
+        AND(value);
+        PC += 2;
+    }
+
+    public void AND_IndirectY() {
+        byte value = IndirectY();
+        AND(value);
         PC += 2;
     }
 
