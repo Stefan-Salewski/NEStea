@@ -1,6 +1,8 @@
 //credits to Dave Poo on youtube for his video
 //https://www.youtube.com/watch?v=qJgsuQoy9bc
 
+import com.sun.jdi.Value;
+
 public class CPU {
     //Accumulator, Index register X and Y. These are 8 bit registers.
     // The stack pointer is also 8 bits
@@ -218,13 +220,180 @@ public class CPU {
         AND(value);
         PC += 2;
     }
-
-    public void ArithmeticShiftLeft(byte value) {
+    //Arithmetic Shift left needs 2 methods because i dont know how to make it target a memory address or accumulator in just 1 method
+    public void ArithmeticShiftLeftAccumulator(byte value) {
         P.set(Flag.CARRY, (value & 0x80) != 0); //set carry flag based on MSB of value
-        value = (byte) (value << 1);
+        byte result = (byte) (value << 1);
         updateZNFlags(value);
-        A = value;
+        A = result;
+        PC += 2;
     }
 
+    public void ArithmeticShiftLeftOther(byte value) {
+        int addr = memory[value] & 0xFF;
+
+        P.set(Flag.CARRY, (value & 0x80) != 0); //set carry flag based on MSB of value
+        byte result = (byte) (value << 1);
+        updateZNFlags(value);
+
+        memory[addr] = result;
+    }
+
+    //addressing modes
+    public void ASL_ZeroPage() {
+        byte value = ZeroPage();
+        ArithmeticShiftLeftOther(value);
+        PC += 5;
+    }
+
+    public void ASL_ZeroPageX() {
+        byte value = ZeroPageX();
+        ArithmeticShiftLeftOther(value);
+        PC += 6;
+    }
+
+    public void ASL_Absolute() {
+        byte value = Absolute();
+        ArithmeticShiftLeftOther(value);
+        PC += 6;
+    }
+
+    public void ASL_AbsoluteX() {
+        byte value = AbsoluteX();
+        ArithmeticShiftLeftOther(value);
+        PC += 7;
+    }
+
+    //base method
+    public void BitTest(byte value) {
+        P.set(Flag.ZERO, (A & value) == 0);
+        P.set(Flag.NEGATIVE, (value & 0x80) != 0);  // Bit 7
+        P.set(Flag.OVERFLOW, (value & 0x40) != 0);  // Bit 6
+    }
+
+    //addressing mode
+
+    public void BIT_ZeroPage() {
+        BitTest(ZeroPage());
+        PC += 2;
+
+    }
+
+    public void BIT_Absolute() {
+        BitTest(Absolute());
+        PC += 3;
+    }
+
+    //Branch methods down here
+    //Base method
+    public void BranchIfCarryClear(int location) {
+        if(!P.isSet(Flag.CARRY)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    //all the instructions that use relative ONLY use relative but for the sake of consistancy i will write them like this too
+    public void BCC_Relative() {
+        int value = Relative();
+        BranchIfCarryClear(value);
+    }
+    //base method
+    public void BranchIfCarrySet(int location) {
+        if(P.isSet(Flag.CARRY)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BCS_Relative() {
+        int value = Relative();
+        BranchIfCarrySet(value);
+    }
+    //base method
+    public void BranchIfEqual(int location) {
+        if(P.isSet(Flag.ZERO)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BEQ_Relative() {
+        int value = Relative();
+        BranchIfEqual(value);
+    }
+
+    //base method
+    public void BranchIfMinus(int location) {
+        if(P.isSet(Flag.NEGATIVE)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BMI_Relative() {
+        int value = Relative();
+        BranchIfMinus(value);
+    }
+
+    //base method
+    public void BranchIfNotEqual(int location) {
+        if(!P.isSet(Flag.ZERO)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BNE_Relative() {
+        int value = Relative();
+        BranchIfNotEqual(value);
+    }
+
+    //base method
+    public void BranchIfPlus(int location) {
+        if(!P.isSet(Flag.NEGATIVE)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BPL_Relative() {
+        int value = Relative();
+        BranchIfPlus(value);
+    }
+
+    //base method
+    public void BranchIfOverflowClear(int location) {
+        if(P.isSet(Flag.OVERFLOW)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BVC_Relative() {
+        int value = Relative();
+        BranchIfOverflowClear(value);
+    }
+
+    //base method
+    public void BranchIfOverflowSet(int location) {
+        if(!P.isSet(Flag.OVERFLOW)) {
+            PC = (short) location;
+        } else {
+            PC += 2;
+        }
+    }
+    //addressing mode
+    public void BVS_Relative() {
+        int value = Relative();
+        BranchIfOverflowSet(value);
+    }
 }
 
