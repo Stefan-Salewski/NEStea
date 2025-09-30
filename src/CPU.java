@@ -22,7 +22,7 @@ public class CPU {
     }
 
     //Stack stuff
-    //push and pull base methods
+    //push and pull
     public void push(byte value) {
         memory[0x0100 + (SP & 0xFF)] = value;
         SP--; // wraparound is automatic with byte
@@ -410,9 +410,19 @@ public class CPU {
     }
 
     public void Break() {
-        push((byte) PC);
-        push(P.toByte());
+        P.set(Flag.BREAK, true); // Set before pushing
+        push((byte)((PC + 2) & 0xFF));       // low byte
+        push((byte)(((PC + 2) >> 8) & 0xFF)); // high byte
+        push(P.toByte());                    // now includes Break flag
         P.set(Flag.INTERRUPT_DISABLE, true);
+        PC = (short)((memory[0xFFFF] << 8) | (memory[0xFFFE] & 0xFF));
+    }
+
+    public void ReturnFromInterrupt() {
+        P.fromByte(pull());
+        int lo = pull() & 0xFF;
+        int hi = pull() & 0xFF;
+        PC = (short)((hi << 8) | lo);
     }
 
 }
