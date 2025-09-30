@@ -20,6 +20,19 @@ public class CPU {
     void Reset() {
 
     }
+
+    //Stack stuff
+    //push and pull base methods
+    public void push(byte value) {
+        memory[0x0100 + (SP & 0xFF)] = value;
+        SP--; // wraparound is automatic with byte
+    }
+
+    public byte pull() {
+        SP++; // increment first
+        return memory[0x0100 + (SP & 0xFF)];
+    }
+
     //update flags
     public void updateZNFlags(byte result) {
         P.set(Flag.ZERO, result == 0);
@@ -395,5 +408,12 @@ public class CPU {
         int value = Relative();
         BranchIfOverflowSet(value);
     }
+
+    public void Break() {
+        push((byte) PC);
+        push(P.toByte());
+        P.set(Flag.INTERRUPT_DISABLE, true);
+    }
+
 }
 
