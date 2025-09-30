@@ -88,7 +88,7 @@ public class CPU {
 
     //only JMP can use this one
     //i do NOT get this one
-    public int IndirectAddress() {
+    private int IndirectAddress() {
         int low = memory[PC + 1] & 0xFF;
         int high = memory[PC + 2] & 0xFF;
         int addr = (high<< 8) | low;
@@ -117,7 +117,7 @@ public class CPU {
 
     //Emulated instructions
     //base method
-    public void addWithCarry(byte value) {
+    private void addWithCarry(byte value) {
         int carryIn = P.isSet(Flag.CARRY) ? 1 : 0;
 
         int result = (A & 0xFF) + (value & 0xFF) + carryIn;
@@ -180,7 +180,7 @@ public class CPU {
         PC += 2;
     }
     //base and function
-    public void AND(byte value) {
+    private void AND(byte value) {
         int result = (A & 0xFF) & (value & 0xFF);
         A = (byte) result;
         updateZNFlags(A);
@@ -242,7 +242,7 @@ public class CPU {
         PC += 2;
     }
 
-    public void ArithmeticShiftLeftOther(byte value) {
+    private void ArithmeticShiftLeftOther(byte value) {
         int addr = memory[value] & 0xFF;
 
         P.set(Flag.CARRY, (value & 0x80) != 0); //set carry flag based on MSB of value
@@ -278,7 +278,7 @@ public class CPU {
     }
 
     //base method
-    public void BitTest(byte value) {
+    private void BitTest(byte value) {
         P.set(Flag.ZERO, (A & value) == 0);
         P.set(Flag.NEGATIVE, (value & 0x80) != 0);  // Bit 7
         P.set(Flag.OVERFLOW, (value & 0x40) != 0);  // Bit 6
@@ -299,7 +299,7 @@ public class CPU {
 
     //Branch methods down here
     //Base method
-    public void BranchIfCarryClear(int location) {
+    private void BranchIfCarryClear(int location) {
         if(!P.isSet(Flag.CARRY)) {
             PC = (short) location;
         } else {
@@ -313,7 +313,7 @@ public class CPU {
         BranchIfCarryClear(value);
     }
     //base method
-    public void BranchIfCarrySet(int location) {
+    private void BranchIfCarrySet(int location) {
         if(P.isSet(Flag.CARRY)) {
             PC = (short) location;
         } else {
@@ -326,7 +326,7 @@ public class CPU {
         BranchIfCarrySet(value);
     }
     //base method
-    public void BranchIfEqual(int location) {
+    private void BranchIfEqual(int location) {
         if(P.isSet(Flag.ZERO)) {
             PC = (short) location;
         } else {
@@ -340,7 +340,7 @@ public class CPU {
     }
 
     //base method
-    public void BranchIfMinus(int location) {
+    private void BranchIfMinus(int location) {
         if(P.isSet(Flag.NEGATIVE)) {
             PC = (short) location;
         } else {
@@ -354,7 +354,7 @@ public class CPU {
     }
 
     //base method
-    public void BranchIfNotEqual(int location) {
+    private void BranchIfNotEqual(int location) {
         if(!P.isSet(Flag.ZERO)) {
             PC = (short) location;
         } else {
@@ -368,7 +368,7 @@ public class CPU {
     }
 
     //base method
-    public void BranchIfPlus(int location) {
+    private void BranchIfPlus(int location) {
         if(!P.isSet(Flag.NEGATIVE)) {
             PC = (short) location;
         } else {
@@ -382,7 +382,7 @@ public class CPU {
     }
 
     //base method
-    public void BranchIfOverflowClear(int location) {
+    private void BranchIfOverflowClear(int location) {
         if(P.isSet(Flag.OVERFLOW)) {
             PC = (short) location;
         } else {
@@ -396,7 +396,7 @@ public class CPU {
     }
 
     //base method
-    public void BranchIfOverflowSet(int location) {
+    private void BranchIfOverflowSet(int location) {
         if(!P.isSet(Flag.OVERFLOW)) {
             PC = (short) location;
         } else {
