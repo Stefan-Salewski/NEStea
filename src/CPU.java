@@ -256,25 +256,25 @@ public class CPU {
     public void ASL_ZeroPage() {
         byte value = ZeroPage();
         ArithmeticShiftLeftOther(value);
-        PC += 5;
+        PC += 2;
     }
 
     public void ASL_ZeroPageX() {
         byte value = ZeroPageX();
         ArithmeticShiftLeftOther(value);
-        PC += 6;
+        PC += 2;
     }
 
     public void ASL_Absolute() {
         byte value = Absolute();
         ArithmeticShiftLeftOther(value);
-        PC += 6;
+        PC += 3;
     }
 
     public void ASL_AbsoluteX() {
         byte value = AbsoluteX();
         ArithmeticShiftLeftOther(value);
-        PC += 7;
+        PC += 3;
     }
 
     //base method
@@ -289,7 +289,6 @@ public class CPU {
     public void BIT_ZeroPage() {
         BitTest(ZeroPage());
         PC += 2;
-
     }
 
     public void BIT_Absolute() {
@@ -420,10 +419,143 @@ public class CPU {
 
     public void ReturnFromInterrupt() {
         P.fromByte(pull());
-        int lo = pull() & 0xFF;
-        int hi = pull() & 0xFF;
-        PC = (short)((hi << 8) | lo);
+        int low = pull() & 0xFF;
+        int high = pull() & 0xFF;
+        PC = (short)((high << 8) | low);
     }
 
+    //base method
+    public void ClearCarry() {
+        P.set(Flag.CARRY, false);
+    }
+    //just doing this for consistancy
+    public void CLC() {
+        ClearCarry();
+        PC+=1;
+    }
+
+    //base method
+    public void ClearDecimal() {
+        P.set(Flag.DECIMAL_MODE, false);
+    }
+    //just doing this for consistancy
+    public void CLD() {
+        ClearDecimal();
+        PC+=1;
+    }
+
+    /*
+    from nesdev.org
+    CLI clears the interrupt disable flag, enabling the CPU to handle hardware IRQs.
+    The effect of changing this flag is delayed one instruction because the flag is changed after IRQ is polled,
+    allowing the next instruction to execute before any pending IRQ is detected and serviced.
+    This flag has no effect on NMI, which (as the "non-maskable" name suggests) cannot be ignored by the CPU.
+
+    i need to implement this behavior where the instructions will be called from i think
+    probably in a big switch statement based on opcode, i will execute the next instruction then this one
+   */
+    //base method
+    public void ClearInterruptDisable() {
+        P.set(Flag.INTERRUPT_DISABLE, false);
+    }
+    //just doing this for consistancy
+    public void CLI() {
+        ClearInterruptDisable();
+        PC+=1;
+    }
+
+    //base method
+    public void ClearOverflow() {
+        P.set(Flag.OVERFLOW, false);
+    }
+    //just doing this for consistancy
+    public void CLV() {
+        ClearOverflow();
+        PC+=1;
+    }
+    //base method
+    //one arguement for the register and one for the memory value to compare
+    public void CompareAXY(byte register,byte value) {
+        if ((register - value) == 0) { //equal to
+            P.set(Flag.ZERO, true);
+            P.set(Flag.CARRY, true);
+        } else if  ((register - value) > 0) { // greater than
+            P.set(Flag.NEGATIVE, (value & 0x80) != 0);  // Bit 7
+            P.set(Flag.CARRY, true);
+        } else if ((register - value) < 0) { //less than
+            P.set(Flag.NEGATIVE, (value & 0x80) != 0);  // Bit 7
+        }
+    }
+
+    //addressing modes
+    public void CMP_Immediate() {
+        CompareAXY(A, Immediate());
+        PC+=2;
+    }
+
+    public void CMP_ZeroPage() {
+        CompareAXY(A, ZeroPage());
+        PC+=2;
+    }
+
+    public void CMP_ZeroPageX() {
+        CompareAXY(A, ZeroPageX());
+        PC+=2;
+    }
+
+    public void CMP_Absolute() {
+        CompareAXY(A, Absolute());
+        PC+=3;
+    }
+
+    public void CMP_AbsoluteX() {
+        CompareAXY(A, AbsoluteX());
+        PC+=3;
+    }
+
+    public void CMP_AbsoluteY() {
+        CompareAXY(A, AbsoluteY());
+        PC+=3;
+    }
+
+    public void CMP_IndirectX() {
+        CompareAXY(A, IndirectX());
+        PC+=2;
+    }
+
+    public void CMP_IndirectY() {
+        CompareAXY(A, IndirectY());
+        PC+=2;
+    }
+
+    public void CPX_Immediate() {
+        CompareAXY(X, Immediate());
+        PC+=2;
+    }
+
+    public void CPX_ZeroPage() {
+        CompareAXY(X, ZeroPage());
+        PC+=2;
+    }
+
+    public void CPX_Absolute() {
+        CompareAXY(X, Absolute());
+        PC+=3;
+    }
+
+    public void CPY_Immediate() {
+        CompareAXY(Y, Immediate());
+        PC+=2;
+    }
+
+    public void  CPY_ZeroPage() {
+        CompareAXY(Y, ZeroPage());
+        PC+=2;
+    }
+
+    public void CPY_Absolute() {
+        CompareAXY(Y, Absolute());
+        PC+=3;
+    }
 }
 
