@@ -548,7 +548,7 @@ public class CPU {
         PC+=2;
     }
 
-    public void  CPY_ZeroPage() {
+    public void CPY_ZeroPage() {
         CompareAXY(Y, ZeroPage());
         PC+=2;
     }
@@ -557,5 +557,151 @@ public class CPU {
         CompareAXY(Y, Absolute());
         PC+=3;
     }
+
+    //base method
+    public void DecrementMemory(byte location) {
+        memory[location] = memory[location];
+        memory[location] = memory[location-1];
+        updateZNFlags(memory[location]);
+    }
+
+    //Addressing modes
+    public void DEC_ZeroPage() {
+        DecrementMemory(ZeroPage());
+        PC+=2;
+    }
+
+    public void DEC_ZeroPageX() {
+        DecrementMemory(ZeroPageX());
+        PC+=2;
+    }
+
+    public void DEC_Absolute() {
+        DecrementMemory(Absolute());
+        PC+=3;
+    }
+
+    public void DEC_AbsoluteX() {
+        DecrementMemory(AbsoluteX());
+        PC+=3;
+    }
+
+    public void DecrementX() {
+        X--;
+        updateZNFlags(X);
+    }
+
+    public void DEX() {
+        DecrementX();
+        PC+=1;
+    }
+
+    public void DecrementY() {
+        Y--;
+        updateZNFlags(Y);
+    }
+
+    public void DEY() {
+        DecrementY();
+        PC+=1;
+    }
+
+    //Base method
+    public void ExclusiveOr(byte value) {
+        int result = (A & 0xFF) ^ (value & 0xFF);
+        A = (byte) result;
+        updateZNFlags(A);
+    }
+
+    //addressing modes
+    public void EOR_Immediate() {
+        ExclusiveOr(Immediate());
+        PC+=2;
+    }
+
+    public void EOR_ZeroPage() {
+        ExclusiveOr(ZeroPage());
+        PC+=2;
+    }
+
+    public void EOR_ZeroPageX() {
+        ExclusiveOr(ZeroPageX());
+        PC+=2;
+    }
+
+    public void EOR_Absolute() {
+        ExclusiveOr(Absolute());
+        PC+=3;
+    }
+
+    public void EOR_AbsoluteX() {
+        ExclusiveOr(AbsoluteX());
+        PC+=3;
+    }
+
+    public void EOR_AbsoluteY() {
+        ExclusiveOr(AbsoluteY());
+        PC+=3;
+    }
+
+    public void EOR_IndirectX() {
+        ExclusiveOr(IndirectX());
+        PC+=2;
+    }
+
+    public void EOR_IndirectY() {
+        ExclusiveOr(IndirectY());
+        PC+=2;
+    }
+    //base method
+    public void IncrementMemory(byte location) {
+        memory[location] = memory[location];
+        memory[location] = memory[location+1];
+        updateZNFlags(memory[location]);
+    }
+
+    //Addressing modes
+    public void INC_ZeroPage() {
+        IncrementMemory(ZeroPage());
+        PC+=2;
+    }
+
+    public void INC_ZeroPageX() {
+        IncrementMemory(ZeroPageX());
+        PC+=2;
+    }
+
+    public void INC_Absolute() {
+        IncrementMemory(Absolute());
+        PC+=3;
+    }
+
+    public void INC_AbsoluteX() {
+        IncrementMemory(AbsoluteX());
+        PC+=3;
+    }
+
+    //base method
+    public void IncrementX() {
+        X++;
+        updateZNFlags(X);
+    }
+
+    public void INX() {
+        IncrementX();
+        PC+=1;
+    }
+
+    //base method
+    public void IncrementY() {
+        Y++;
+        updateZNFlags(Y);
+    }
+
+    public void INY() {
+        IncrementY();
+        PC+=1;
+    }
+
 }
 
