@@ -703,5 +703,35 @@ public class CPU {
         PC+=1;
     }
 
+    //base
+    public void Jump(int addr) {
+        PC = (short) (addr & 0xFFFF);
+    }
+
+    //Adressing mode
+    public void JMP_Absolute() {
+        int low = memory[PC + 1] & 0xFF;
+        int high = memory[PC + 2] & 0xFF;
+        int addr = (high << 8) | low;
+        Jump(addr);
+    }
+
+    public void JMP_Indirect() {
+        int target = IndirectAddress();
+        Jump(target);
+    }
+
+    //base method
+    public void JumpToSubroutine(int addr) {
+        push((byte)((PC + 2) & 0xFF));       // low byte
+        push((byte)(((PC + 2) >> 8) & 0xFF)); // high byte
+        PC = (short) (addr & 0xFFFF);
+    }
+
+    //addressing mode
+    public void JSR_Absolute() {
+        JumpToSubroutine(Absolute());
+    }
+
 }
 
